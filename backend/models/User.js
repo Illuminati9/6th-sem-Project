@@ -1,6 +1,6 @@
-const { default: mongoose } = require("mongoose");
-const hashPasswordMiddleware = require("../middleware/hashPassword");
-const bcrypt = require("bcryptjs");
+import mongoose from "mongoose";
+import {hashPasswordMiddleware} from "../middleware/hashPassword.js";
+import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema({
     username:{
@@ -23,16 +23,10 @@ const userSchema = new mongoose.Schema({
         required: true,
         minlength: 6
     },
-    otp:{
-        type:String,
-        default: null,
+    additionalDetails:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Profile'
     },
-    otpExpires:{
-        type: Date,
-        default:null
-    }
 }, {timestamps: true});
 
-// userSchema.pre("save", hashPasswordMiddleware);
-
-module.exports = mongoose.model('User', userSchema);
+export default mongoose.model('User', userSchema);

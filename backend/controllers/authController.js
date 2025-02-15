@@ -1,7 +1,7 @@
-const User = require('../models/User');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const nodemailer = require('nodemailer');
+import User from '../models/User.js';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
@@ -16,7 +16,7 @@ const generateOTP = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
-exports.forgotPassword = async (req, res) => {
+export const forgotPassword = async (req, res) => {
     try {
         const { email } = req.body;
 
@@ -48,7 +48,7 @@ exports.forgotPassword = async (req, res) => {
 };
 
 
-exports.resetPassword= async (req,res) => {
+export const resetPassword= async (req,res) => {
     try {
         const {email, otp, password}= req.body;
         const user = await User.findOne({email});
@@ -71,7 +71,7 @@ exports.resetPassword= async (req,res) => {
     
 }
 
-exports.signup = async (req, res) => {
+export const signup = async (req, res) => {
     try {
         const { username, email, password } = req.body;
 
@@ -96,7 +96,7 @@ exports.signup = async (req, res) => {
     
 };
 
-exports.login = async (req, res) => {
+export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
