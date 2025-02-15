@@ -1,6 +1,6 @@
-const bcrypt = require("bcryptjs");
+import bcrypt from "bcryptjs";
 
-const hashPasswordMiddleware = async function (next) {
+export const hashPasswordMiddleware = async function (next) {
     if (!this.isModified("password")) {
         return next();
     }
@@ -13,4 +13,4 @@ const hashPasswordMiddleware = async function (next) {
     }
 };
 
-module.exports = hashPasswordMiddleware;
+// module.exports = hashPasswordMiddleware;
