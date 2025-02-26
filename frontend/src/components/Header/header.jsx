@@ -1,11 +1,30 @@
 import React from "react";
 import { useStyles } from "./style";
-import { AppBar, Toolbar, Typography } from "@mui/material";
+import { AppBar, Toolbar, Typography, Avatar, Menu, MenuItem } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import Apps from "@mui/icons-material/Apps";
+import CreateClass from "../CreateClass/CreateClass";
+import { useLocalContext } from "../../context/context";
 
-const Header = ({children}) => {
 
+const Header = ({ children }) => {
   const classes = useStyles();
+  const [anchor, setAnchor] = React.useState(null);
+
+  const HandleClick = (event) => {
+    setAnchor(event.currentTarget);
+  };
+
+  const HandleClose = () => {
+    setAnchor(null);
+  };
+  
+  const { state, setState } = useLocalContext(); 
+  
+  const handlecreate = () => {
+    HandleClose();  
+    setState(true);
+  }
 
   return (
     <div className={classes.root}>
@@ -22,10 +41,25 @@ const Header = ({children}) => {
             </Typography>
           </div>
           <div className={classes.header__wrapper__right}>
-            <AddIcon />
+            <AddIcon onClick={HandleClick} className={classes.icon} />
+            <Apps className={classes.icon}  />
+            <Menu
+              id="simple-menu"
+              anchorEl={anchor}
+              keepMounted
+              open={Boolean(anchor)}
+              onClose={HandleClose}
+            >
+              <MenuItem onClick={HandleClose}>Join Class</MenuItem>
+              <MenuItem  onClick={handlecreate} >Create Class</MenuItem>
+            </Menu>
+            <div>
+              <Avatar className={classes.icon}  />
+            </div>
           </div>
         </Toolbar>
       </AppBar>
+      <CreateClass />
     </div>
   );
 };

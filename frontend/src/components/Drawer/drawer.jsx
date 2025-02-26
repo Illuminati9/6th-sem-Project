@@ -12,11 +12,11 @@ import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
 import Header from "../Header/header";
 import { IconButton, Menu } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu"; // ✅ Import MenuIcon
-import { useStyles } from "../Header/style"; // ✅ Import useStyles
+import MenuIcon from "@mui/icons-material/Menu";
+import { useStyles } from "../Header/style"; 
 
 export default function SwipeableTemporaryDrawer() {
-  const classes = useStyles(); // ✅ Initialize classes
+  const classes = useStyles(); 
   const [state, setState] = React.useState({
     left: false,
   });
