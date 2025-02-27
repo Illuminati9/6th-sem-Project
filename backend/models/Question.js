@@ -9,6 +9,7 @@ const questionSchema = new mongoose.Schema({
     marks: {
         type: Number,
         required: true,
+        default: 0,
     },
     assignmentId:{
         type: mongoose.Schema.Types.ObjectId,
