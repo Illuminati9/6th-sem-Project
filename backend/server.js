@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import dbConnect from './config/database.js';
 import authRoutes from './routes/authRoutes.js';
+import classroomRoutes from './routes/classroomRoutes.js';
 
 dotenv.config();
 dbConnect();
@@ -12,7 +13,7 @@ app.use(express.json());
 
 // const authRoutes = require('./routes/authRoutes');  
 app.use('/api/auth/', authRoutes);
-
+app.use('/api/classroom/', classroomRoutes);
 app.listen(PORT, () => {
     console.log(`App is running at ${PORT}`);
 });

@@ -5,3 +5,6 @@ export const Default = 'DEFAULT';
 export const Pending = 'PENDING';
 export const Submitted = 'SUBMITTED';
 export const Late = 'LATE';
+
+export const Student = 'STUDENT';
+export const Instructor = 'INSTRUCTOR';
