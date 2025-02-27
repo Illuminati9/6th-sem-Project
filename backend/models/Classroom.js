@@ -32,6 +32,7 @@ const classroomSchema = new mongoose.Schema({
     ],
     instructor: {
         type: mongoose.Schema.Types.ObjectId,
+        required: true,
         ref: "User",
     },
     classroomCode:{
