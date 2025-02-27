@@ -8,3 +8,4 @@ export const Late = 'LATE';
 
 export const Student = 'STUDENT';
 export const Instructor = 'INSTRUCTOR';
+export const Assistant = 'ASSISTANT';
