@@ -4,6 +4,7 @@ import { AppBar, Toolbar, Typography, Avatar, Menu, MenuItem } from "@mui/materi
 import AddIcon from "@mui/icons-material/Add";
 import Apps from "@mui/icons-material/Apps";
 import CreateClass from "../CreateClass/CreateClass";
+import JoinClass from "../JoinClass/joinClass";
 import { useLocalContext } from "../../context/context";
 
 
@@ -19,8 +20,12 @@ const Header = ({ children }) => {
     setAnchor(null);
   };
   
-  const { state, setState } = useLocalContext(); 
+  const { setState , setJoin} = useLocalContext(); 
   
+  const Handlejoin = () => {
+    HandleClose();
+    setJoin(true);
+  }
   const handlecreate = () => {
     HandleClose();  
     setState(true);
@@ -50,7 +55,7 @@ const Header = ({ children }) => {
               open={Boolean(anchor)}
               onClose={HandleClose}
             >
-              <MenuItem onClick={HandleClose}>Join Class</MenuItem>
+              <MenuItem onClick={Handlejoin}>Join Class</MenuItem>
               <MenuItem  onClick={handlecreate} >Create Class</MenuItem>
             </Menu>
             <div>
@@ -60,6 +65,7 @@ const Header = ({ children }) => {
         </Toolbar>
       </AppBar>
       <CreateClass />
+      <JoinClass/>
     </div>
   );
 };

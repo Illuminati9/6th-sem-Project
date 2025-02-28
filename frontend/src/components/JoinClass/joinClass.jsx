@@ -1,15 +1,20 @@
-import React from 'react'
-import { useLocalContext } from '../../context/context'
+import React from 'react';
+import { useLocalContext } from '../../context/context';
+import { makeStyles } from '@mui/styles'; 
 
-const joinClass = () => {
+const useStyles = makeStyles({
+  
+});
 
-    const classes = useStyles();
-    const {join, setJoin} = useLocalContext();
+const JoinClass = () => {
+  const classes = useStyles();
+  const { join , setJoin} = useLocalContext(); 
+
   return (
     <div>
-      <h1>hello</h1>
+      {join && <h1>Hello</h1>}
     </div>
-  )
-}
+  );
+};
 
-export default joinClass
+export default JoinClass;
