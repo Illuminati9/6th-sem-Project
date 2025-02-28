@@ -1,4 +1,4 @@
-import { createContext, useState ,useContext } from "react";
+import { createContext, useState, useContext } from "react";
 
 const AddContext = createContext();
 
@@ -7,9 +7,10 @@ export function useLocalContext() {
 }
 
 export function ContextProvider({ children }) {
-    const [state, setState] = useState(false);
-    const value = { state, setState };
+  const [state, setState] = useState(false);
+  const [join, setJoin] = useState(false);
 
+  const value = { state, setState, join, setJoin };
 
   return <AddContext.Provider value={value}>{children}</AddContext.Provider>;
 }
