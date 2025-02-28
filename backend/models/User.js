@@ -10,6 +10,12 @@ const userSchema = new mongoose.Schema({
         trim: true,
         minlength: 5
     },
+    name: {
+        type: String,
+        required: true,
+        trim: true,
+        minlength: 3
+    },
     email:{
         type: String,
         required: true,
@@ -23,6 +29,12 @@ const userSchema = new mongoose.Schema({
         required: true,
         minlength: 6
     },
+    classrooms:[
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Classroom'
+        }
+    ],
     additionalDetails:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Profile'

@@ -23,7 +23,7 @@ export const forgotPassword = async (req, res) => {
         const user = await User.findOne({ email });
 
         if (!user) {
-            return res.status(404).json({ msg: "User Not Found" });
+            return res.status(404).json({ message: "User Not Found" });
         }
 
         const otp = generateOTP();
@@ -39,10 +39,10 @@ export const forgotPassword = async (req, res) => {
         };
 
         await transporter.sendMail(mailOptions);
-        res.status(200).json({ msg: 'OTP sent to email' });
+        res.status(200).json({ message: 'OTP sent to email',success: true });
 
     } catch (error) {
-        res.status(500).json({ msg: error.message });
+        res.status(500).json({ message: error.message, success: false});
     }
     
 };
@@ -54,7 +54,7 @@ export const resetPassword= async (req,res) => {
         const user = await User.findOne({email});
 
         if(!user || user.otp!= otp){
-            return res.status(400).json({ msg: "invalid or expired opt" });
+            return res.status(400).json({ message: "invalid or expired opt",success: false });
         }
 
         const salt = await bcrypt.genSalt(10);
@@ -64,34 +64,39 @@ export const resetPassword= async (req,res) => {
         user.otpExpires=null;
         await user.save();
 
-        res.status(200).json({ msg: 'success' });
+        res.status(200).json({ message: 'success',success: true });
     } catch (error) {
-        res.status(500).json({ msg: error.message });
+        res.status(500).json({ message: error.message, success: false});
     }
     
 }
 
 export const signup = async (req, res) => {
     try {
-        const { username, email, password } = req.body;
+        const { username, name, email, password } = req.body;
+
+        if(!username || !name || !email || !password){
+            return res.status(400).json({ message: 'Please enter all fields',success: false });
+        }
 
         let user = await User.findOne({ email });
         if (user) {
-            return res.status(400).json({ msg: 'User already exists' });
+            return res.status(400).json({ message: 'User already exists' , success: false});
         }
 
-        user = new User({ username, email, password });
+        user = new User({ username, name, email, password });
         await user.save();
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
 
         res.status(201).json({
             message: 'User created successfully',
-            token
+            token,
+            success: true
         });
 
     } catch (error) {
-        res.status(500).json({ msg: error.message });
+        res.status(500).json({ message: error.message, success: false});
     }
     
 };
@@ -101,27 +106,30 @@ export const login = async (req, res) => {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.status(400).json({ msg: 'Please enter all fields' });
+            return res.status(400).json({ message: 'Please enter all fields', success: false });
         }
 
         let user = await User.findOne({ email });
         if (!user) {
-            return res.status(400).json({ msg: 'User does not exist' });
+            return res.status(400).json({ message: 'User does not exist' , success: false});
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ msg: 'Invalid credentials' });
+            return res.status(400).json({ message: 'Invalid credentials' , success: false});
         }
 
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
 
         res.status(200).json({
             message: 'User logged in successfully',
-            token
+            token,
+            success: true
         });
 
     } catch (error) {
-        res.status(500).json({ msg: error.message });
+        res.status(500).json({ message: error.message , success: false});
     }
 };
+
+
