@@ -43,4 +43,4 @@ We wanted a user-friendly tool for teachers (admins) to:
 ## Usage Tips
 - **Admin/Teacher Role**: Use this role to set up the entire structure: classes, subjects, sections, assignments, and check plagiarism reports.
 - **Student Role**: Students can only see and submit assignments and view their feedback or plagiarism status (if made visible).
-- **Plagiarism Reports**: Teachers can filter the reports by class, section, or specific assignment.\
+- **Plagiarism Reports**: Teachers can filter the reports by class, section, or specific assignment.
