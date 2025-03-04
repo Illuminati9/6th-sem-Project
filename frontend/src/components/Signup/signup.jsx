@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { useLocalContext } from "../../context/context";
+// frontend/src/components/Signup/signup.jsx
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -7,122 +8,193 @@ import {
   Button,
   IconButton,
   InputAdornment,
-  Divider
+  Divider,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import GoogleIcon from "@mui/icons-material/Google";
-import "./style.css"; // Using CSS classes from style.css
+import "./style.css";
+import axios from "axios";
 
 const SignUp = () => {
-  const { signup } = useLocalContext();
-
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    username: "",
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleTogglePassword = () => setShowPassword(!showPassword);
-  const handleToggleConfirmPassword = () =>
+  const handleTogglePassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleToggleConfirmPassword = () => {
     setShowConfirmPassword(!showConfirmPassword);
+  };
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await axios.post(
+        "http://localhost:8000/api/auth/signup",
+        {
+          username: formData.username,
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }
+      );
+
+      if (response.data.success) {
+        localStorage.setItem("token", response.data.token);
+        navigate("/login");
+      }
+    } catch (error) {
+      setError(
+        error.response?.data?.message || "An error occurred during signup"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <Box className="signup">
-      <Typography variant="h5" className="signup__heading">
-        Create Your Account
-      </Typography>
+    <div className="signup">
       <Box className="signup__container">
-        <TextField
-          margin="normal"
-          size="small"
-          label="Full Name"
-          variant="outlined"
-          fullWidth
-          className="signup__input"
-        />
+        <Typography variant="h5" className="signup__heading">
+          Create Your Account
+        </Typography>
 
-        <TextField
-          margin="normal"
-          size="small"
-          label="Email"
-          type="email"
-          variant="outlined"
-          fullWidth
-          className="signup__input"
-        />
-
-        <TextField
-          margin="normal"
-          size="small"
-          label="Password"
-          type={showPassword ? "text" : "password"}
-          variant="outlined"
-          fullWidth
-          className="signup__input"
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={handleTogglePassword} edge="end">
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            )
-          }}
-        />
-
-        <TextField
-          margin="normal"
-          size="small"
-          label="Confirm Password"
-          type={showConfirmPassword ? "text" : "password"}
-          variant="outlined"
-          fullWidth
-          className="signup__input"
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={handleToggleConfirmPassword} edge="end">
-                  {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            )
-          }}
-        />
-
-        <Button
-          variant="contained"
-          onClick={signup}
-        //   fullWidth
-          className="signup__btn"
-        >
-          Sign Up Now!
-        </Button>
-
-    
-        <Box className="signup__divider">
-          <Divider className="signup__divider-line" />
-          <Typography variant="body2" className="signup__divider-text">
-            or continue with
+        {error && (
+          <Typography color="error" sx={{ mb: 2 }}>
+            {error}
           </Typography>
-          <Divider className="signup__divider-line" />
+        )}
+
+        <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+          <TextField
+            className="signup__input"
+            label="Username"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            fullWidth
+            required
+          />
+
+          <TextField
+            className="signup__input"
+            label="Full Name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            fullWidth
+            required
+          />
+
+          <TextField
+            className="signup__input"
+            label="Email"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+            fullWidth
+            required
+          />
+
+          <TextField
+            className="signup__input"
+            label="Password"
+            name="password"
+            type={showPassword ? "text" : "password"}
+            value={formData.password}
+            onChange={handleChange}
+            fullWidth
+            required
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={handleTogglePassword} edge="end">
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+
+          <TextField
+            className="signup__input"
+            label="Confirm Password"
+            name="confirmPassword"
+            type={showConfirmPassword ? "text" : "password"}
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            fullWidth
+            required
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={handleToggleConfirmPassword} edge="end">
+                    {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
+            <Button
+              type="submit"
+              variant="contained"
+              className="signup__btn"
+              disabled={loading}
+            >
+              {loading ? "Signing up..." : "Sign Up"}
+            </Button>
+          </Box>
+        </form>
+
+        <Box sx={{ width: "100%", mt: 2 }}>
+          <Divider>or continue with</Divider>
         </Box>
 
         <Button
           variant="outlined"
           startIcon={<GoogleIcon />}
-        //   fullWidth
-          className="signup__social-btn"
+          sx={{ mt: 2, width: "60%" }}
         >
-          Sign Up with Google
+          Sign up with Google
         </Button>
 
-        <Box className="signup__login">
-          <Typography variant="body2">
-            Already have an account?{" "}
-            <a href="/login" className="signup__login-link">
-              Login
-            </a>
-          </Typography>
-        </Box>
+        <Typography className="signup__login" variant="body2">
+          Already have an account?{" "}
+          <a href="/login" className="signup__login-link">
+            Login
+          </a>
+        </Typography>
       </Box>
-    </Box>
+    </div>
   );
 };
 

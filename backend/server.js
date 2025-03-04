@@ -4,12 +4,14 @@ import dbConnect from './config/database.js';
 import authRoutes from './routes/authRoutes.js';
 import classroomRoutes from './routes/classroomRoutes.js';
 import assignmentRoutes from './routes/assignmentRoutes.js';
+import cors from 'cors';
 
 dotenv.config();
 dbConnect();
 const PORT = process.env.PORT || 8000;
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 // const authRoutes = require('./routes/authRoutes');  
