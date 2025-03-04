@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import { useState } from "react";
 import { useLocalContext } from "../../context/context";
 import { Dialog, DialogContent, Typography, Checkbox, DialogActions, Button, FormControlLabel } from "@mui/material";
 import { makeStyles } from "@mui/styles"; 
@@ -8,15 +9,20 @@ import Form from "./Form";
 const useStyles = makeStyles({
   title: {
     padding: "16px",
-    fontSize: "18px",
-    fontWeight: "bold",
+    fontSize: "24px", 
+    fontWeight: "500",
+    color: "#1a73e8", 
   },
   content: {
-    padding: "16px",
+    padding: "24px",
+    backgroundColor: "#f8f9fa",
   },
   checkbox: {
-    marginTop: "10px",
+    marginTop: "15px",
   },
+  dialogPaper: {
+    borderRadius: "12px",
+  }
 });
 
 export default function CreateClass() {
@@ -32,36 +38,54 @@ export default function CreateClass() {
   return (
     <Dialog
       onClose={() => setState(false)}
-      aria-labelledby="simple-dialog-title"
+      aria-labelledby="create-class-dialog"
       open={state}
       maxWidth={form ? "md" : "xs"}
       fullWidth
+      PaperProps={{
+        className: classes.dialogPaper
+      }}
     >
       {form ? (
-        <Form setForm={setForm} />  
+        <Form setForm={setForm} setState={setState} />  
       ) : (
         <>
           <Typography className={classes.title}>
-            Using a form to create a class?
+            Create a New Classroom
           </Typography>
           <DialogContent className={classes.content}>
             <div>
-              <p>This is the class room of Google</p>
-              <a href="/help" className="link1">Heyyyyyyyyy</a> and this is our project
-              <a href="/learn" className="link2"> Learn more</a>
+              <p className="create-class-description">
+                Create a virtual classroom to manage assignments, collaborate with students, 
+                and organize learning materials effectively.
+              </p>
             </div>
             <div className={classes.checkbox}>
               <FormControlLabel
-                control={<Checkbox onChange={handleChange} checked={check} />}
-                label="I understand"
+                control={
+                  <Checkbox 
+                    onChange={handleChange} 
+                    checked={check}
+                    color="primary" 
+                  />
+                }
+                label="I understand and agree to the terms"
               />
             </div>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setState(false)} color="default">  
-              Close
+          <DialogActions style={{ padding: "16px" }}>
+            <Button 
+              onClick={() => setState(false)} 
+              style={{ color: "#5f6368" }}
+            >  
+              Cancel
             </Button>
-            <Button disabled={!check} color="primary" onClick={() => setForm(true)}>  
+            <Button 
+              disabled={!check} 
+              variant="contained"
+              color="primary" 
+              onClick={() => setForm(true)}
+            >  
               Continue
             </Button>
           </DialogActions>

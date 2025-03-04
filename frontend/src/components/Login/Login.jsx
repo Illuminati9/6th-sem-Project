@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocalContext } from "../../context/context";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -7,70 +7,124 @@ import {
   Button,
   IconButton,
   InputAdornment,
-  Divider
+  Divider,
+  Alert,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import GoogleIcon from "@mui/icons-material/Google";
 import "./style.css";
 
 const Login = () => {
-  const { login } = useLocalContext();
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
 
   const handleTogglePassword = () => {
-    setShowPassword(!showPassword);
+    setShowPassword((prev) => !prev);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      const response = await fetch("http://localhost:8000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        localStorage.setItem("token", data.token);
+        navigate("/");
+      } else {
+        setError(data.message || "Invalid credentials. Please try again.");
+      }
+    } catch (err) {
+      setError(err.message || "An error occurred during login. Please try again.");
+    }
   };
 
   return (
     <Box className="login">
       <Typography variant="h5" className="login__heading">
-        Hi! Welcome to Wealth Wave dude{" "}
+        Welcome Back!{" "}
         <span role="img" aria-label="wave">
           👋
         </span>
       </Typography>
 
       <Box className="login__container">
-        <TextField
-          margin="normal"
+        {error && (
+          <Alert severity="error" sx={{ width: "100%", mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+
+        <form onSubmit={handleLogin}>
+          <TextField
+            margin="normal"
             size="small"
-          label="Email"
-          type="email"
-          variant="outlined"
-          fullWidth
-          className="login__input"
-        />
+            label="Email"
+            type="email"
+            name="email"
+            variant="outlined"
+            fullWidth
+            className="login__input"
+            value={formData.email}
+            onChange={handleInputChange}
+            required
+          />
 
-        <TextField
-          margin="normal"
-          size="small"
-          label="Password"
-          type={showPassword ? "text" : "password"}
-          variant="outlined"
-          fullWidth
-          className="login__input"
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={handleTogglePassword} edge="end">
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            )
-          }}
-        />
+          <TextField
+            margin="normal"
+            size="small"
+            label="Password"
+            type={showPassword ? "text" : "password"}
+            name="password"
+            variant="outlined"
+            fullWidth
+            className="login__input"
+            value={formData.password}
+            onChange={handleInputChange}
+            required
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={handleTogglePassword} edge="end">
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
 
-        <Button
-          variant="contained"
-          onClick={login}
-          className="login__btn"
-        >
-          Login Now!
-        </Button>
+          <Button type="submit" variant="contained" className="login__btn">
+            Login Now!
+          </Button>
+        </form>
 
         <Box className="login__signup">
           <Typography variant="body2">
-            Don’t have an account?{" "}
+            Don&apos;t have an account?{" "}
             <a href="/signup" className="login__signup-link">
               Sign Up
             </a>
@@ -86,14 +140,9 @@ const Login = () => {
         </Box>
 
         <Box className="login__social">
-          <Button
-            variant="outlined"
-            startIcon={<GoogleIcon />}
-            className="login__social-btn"
-          >
+          <Button variant="outlined" startIcon={<GoogleIcon />} className="login__social-btn">
             Google
           </Button>
-          
         </Box>
       </Box>
     </Box>

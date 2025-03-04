@@ -11,7 +11,12 @@ dbConnect();
 const PORT = process.env.PORT || 8000;
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:5173", 
+    methods: "GET, POST, PUT, DELETE", 
+    credentials: true,
+  }));
+  
 app.use(express.json());
 
 // const authRoutes = require('./routes/authRoutes');  
