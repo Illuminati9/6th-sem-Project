@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useLocalContext } from "../../context/context";
 import Dialog from "@mui/material/Dialog";
 import Slide from "@mui/material/Slide";
@@ -6,6 +6,7 @@ import Close from "@mui/icons-material/Close";
 import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
 import TextField from "@mui/material/TextField";
+import axios from "axios";
 import "./style.css";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -14,6 +15,42 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const JoinClass = () => {
   const { join, setJoin } = useLocalContext();
+  const [classCode, setClassCode] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleJoinClass = async () => {
+    if (!classCode.trim()) {
+      setError("Please enter a class code");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError("");
+      
+      const response = await axios.post(
+        `http://localhost:8000/api/classroom/join/${classCode}`,
+        {},
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        }
+      );
+
+      if (response.data.success) {
+        setJoin(false);
+        if (window.confirm('Successfully joined the classroom! Reload page to see changes?')) {
+          window.location.reload();
+        }
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to join classroom");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Dialog
@@ -26,36 +63,46 @@ const JoinClass = () => {
         <div className="joinClass__wrapper">
           <div className="joinClass__wraper2" onClick={() => setJoin(false)}>
             <Close className="joinClass__svg" />
-          <h3 className="joinClass__topHead" >Join Class</h3>
+            <h3 className="joinClass__topHead">Join Class</h3>
           </div>
           <Button
             className="joinClass__btn"
             variant="contained"
             color="primary"
+            onClick={handleJoinClass}
+            disabled={loading || !classCode.trim()}
           >
-            Join
+            {loading ? "Joining..." : "Join"}
           </Button>
         </div>
+
+        {error && (
+          <div style={{ color: "red", textAlign: "center", margin: "10px" }}>
+            {error}
+          </div>
+        )}
+
         <div className="joinClass__form">
           <p className="joinClass__formtext">
-            you are about to join the class of Googleclassroom.
+            You are about to join a classroom
           </p>
           <div className="joinClass__loginInfo">
             <div className="joinClass__classLeft">
-              <Avatar></Avatar>
+              <Avatar />
               <div className="joinClass__loginText">
-                <div className="joinClass__loginName"> Name</div>
-                <div className="joinClass__loginEmail">E-Mail</div>
+                <div className="joinClass__loginName">
+                  {localStorage.getItem('username')}
+                </div>
+                <div className="joinClass__loginEmail">
+                  {localStorage.getItem('email')}
+                </div>
               </div>
             </div>
-            <Button variant="outlined" color="primary">
-              Logout
-            </Button>
           </div>
         </div>
         <div className="joinClass__form">
           <div
-            style={{ color: "#3c4043", fontSize: "1.25rem"  }}
+            style={{ color: "#3c4043", fontSize: "1.25rem" }}
             className="joinClass__formtext"
           >
             Class Code
@@ -71,11 +118,13 @@ const JoinClass = () => {
               id="outlined-basic"
               label="Enter Class Code"
               variant="outlined"
-            />
-            <TextField
-              id="outlined-basic"
-              label="Owner's Email"
-              variant="outlined"
+              value={classCode}
+              onChange={(e) => {
+                setClassCode(e.target.value);
+                setError("");
+              }}
+              error={!!error}
+              helperText={error}
             />
           </div>
         </div>
