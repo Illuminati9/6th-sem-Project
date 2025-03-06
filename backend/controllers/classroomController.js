@@ -112,7 +112,7 @@ export const getClassroom = async (req, res) => {
         const { classroomCode } = req.params;
         const { id } = req.user;
         const classroom = await ClassroomModel.findOne({classroomCode}).populate('instructor', 'username email').populate('students', 'username email');
-        // console.log(id+'--');
+      
         if(!classroom) {
             return res.status(404).json({ message: "Classroom not found.",success: false });
         }
@@ -170,6 +170,11 @@ export const getAllClassrooms =async (req,res)=>{
             };
         });
         
+
+        for(let i=0;i<classrooms.length;i++){
+            const instructor = await UserModel.findById(classrooms[i].instructor,{password:0});
+            classrooms[i].instructor = instructor.name;
+        }
 
         res.status(200).json({
             success: true,
