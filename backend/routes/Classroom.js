@@ -1,5 +1,5 @@
 import express from 'express';
-import { createClassroom,deleteClassroom,exitClassroom,getAllClassrooms,getClassroom,getUserDataByClassroomCode,joinClassroom, updateAssistants, updateClassroom } from '../controllers/classroomController.js';
+import { createClassroom,deleteClassroom,exitClassroom,getAllClassrooms,getClassroom,getUserDataByClassroomCode,joinClassroom, updateAssistants, updateClassroom } from '../controllers/Classroom.js';
 import authenticateUser from '../middleware/authMiddleware.js';
 
 const router = express.Router();

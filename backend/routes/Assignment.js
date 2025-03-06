@@ -1,5 +1,5 @@
 import express from 'express';
-import { createAssignment, deleteAssignment, getAllAssignments, getAssignment, updateAssignment } from '../controllers/assignmentController.js';
+import { createAssignment, deleteAssignment, getAllAssignments, getAssignment, updateAssignment } from '../controllers/Assignment.js';
 import authenticateUser from '../middleware/authMiddleware.js';
 
 const router = express.Router();

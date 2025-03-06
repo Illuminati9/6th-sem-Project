@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { assign } from "nodemailer/lib/shared";
 
 const commentSchema = new mongoose.Schema({
     content: {
@@ -6,9 +7,14 @@ const commentSchema = new mongoose.Schema({
         required: true,
         trim: true,
     },
+    classroomId:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Classroom",
+    },
     assignmentId:{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Assignment",
+        default: null,
     },
     parentCommentId:{
         type: mongoose.Schema.Types.ObjectId,

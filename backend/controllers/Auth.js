@@ -73,7 +73,7 @@ export const resetPassword= async (req,res) => {
 
 export const signup = async (req, res) => {
     try {
-        let { username, name, email, password } = req.body;
+        const { username, name, email, password } = req.body;
 
         if(!username || !name || !email || !password){
             return res.status(400).json({ message: 'Please enter all fields',success: false });
@@ -83,9 +83,6 @@ export const signup = async (req, res) => {
         if (user) {
             return res.status(400).json({ message: 'User already exists' , success: false});
         }
-
-        const salt = await bcrypt.genSalt(10);
-        password = await bcrypt.hash(password, salt);
 
         user = new User({ username, name, email, password });
         await user.save();
@@ -117,7 +114,7 @@ export const login = async (req, res) => {
             return res.status(400).json({ message: 'User does not exist' , success: false});
         }
 
-        const isMatch = await bcrypt.compare(password,user.password);
+        const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({ message: 'Invalid credentials' , success: false});
         }
