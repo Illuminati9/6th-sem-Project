@@ -1,9 +1,9 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import dbConnect from './config/database.js';
-import authRoutes from './routes/authRoutes.js';
-import classroomRoutes from './routes/classroomRoutes.js';
-import assignmentRoutes from './routes/assignmentRoutes.js';
+import authRoutes from './routes/Auth.js';
+import classroomRoutes from './routes/Classroom.js';
+import assignmentRoutes from './routes/Assignment.js';
 import cors from 'cors';
 
 dotenv.config();
