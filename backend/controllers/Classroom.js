@@ -166,11 +166,15 @@ export const getAllClassrooms =async (req,res)=>{
                 description: classroom.description,
                 classroomCode: classroom.classroomCode,
                 subject: classroom.subject,
-                instructor: classroom.instructor.toString()
+                instructor: classroom.instructor,
             };
         });
-        
 
+        for(let i=0;i<classrooms.length;i++){
+            const instructor = await UserModel.findById(classrooms[i].instructor,{password:0});
+            classrooms[i].instructor = instructor.name;
+        }
+        
         res.status(200).json({
             success: true,
             classrooms: classrooms
