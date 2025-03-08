@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { assign } from "nodemailer/lib/shared";
 
 const commentSchema = new mongoose.Schema({
     content: {

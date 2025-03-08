@@ -3,13 +3,6 @@ import {hashPasswordMiddleware} from "../middleware/hashPassword.js";
 import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema({
-    username:{
-        type: String,
-        required: true,
-        unique: true,
-        trim: true,
-        minlength: 5
-    },
     name: {
         type: String,
         required: true,
