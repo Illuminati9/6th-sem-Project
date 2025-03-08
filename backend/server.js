@@ -4,6 +4,7 @@ import dbConnect from './config/database.js';
 import authRoutes from './routes/Auth.js';
 import classroomRoutes from './routes/Classroom.js';
 import assignmentRoutes from './routes/Assignment.js';
+import commentRoutes from './routes/Comment.js';
 import cors from 'cors';
 
 dotenv.config();
@@ -23,7 +24,7 @@ app.use(express.json());
 app.use('/api/auth/', authRoutes);
 app.use('/api/classroom/', classroomRoutes);
 app.use('/api/assignment/', assignmentRoutes);
-
+app.use('/api/comment/', commentRoutes);
 app.listen(PORT, () => {
     console.log(`App is running at ${PORT}`);
 });
