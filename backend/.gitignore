@@ -3,3 +3,7 @@ target/
 .env
 *.log
 api_endpoints.md
+
+.DS_Store
+package-lock.json
+yarn.lock

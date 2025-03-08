@@ -5,10 +5,6 @@ const answerSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Question",
     },
-    assignmentId:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Assignment",
-    },
     content: {
         type: String,
         required: true,
