@@ -5,6 +5,7 @@ import authRoutes from './routes/Auth.js';
 import classroomRoutes from './routes/Classroom.js';
 import assignmentRoutes from './routes/Assignment.js';
 import commentRoutes from './routes/Comment.js';
+import submissionRoutes from './routes/Submission.js';
 import cors from 'cors';
 
 dotenv.config();
@@ -25,6 +26,8 @@ app.use('/api/auth/', authRoutes);
 app.use('/api/classroom/', classroomRoutes);
 app.use('/api/assignment/', assignmentRoutes);
 app.use('/api/comment/', commentRoutes);
+app.use('/api/submission/', submissionRoutes);
+
 app.listen(PORT, () => {
     console.log(`App is running at ${PORT}`);
 });

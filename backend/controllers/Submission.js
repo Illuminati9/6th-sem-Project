@@ -3,17 +3,28 @@ import QuestionModel from "../models/Question";
 import AnswerModel from "../models/Answer";
 import SubmissionModel from "../models/Submission";
 import { Submitted } from "../utils/enums";
+import ClassroomModel from "../models/Classroom";
 
 export const createSubmission = async (req, res) => {
     try{
-        const { assignmentId, studentId, answers } = req.body;
+        const { classroomId, assignmentId, studentId, answers } = req.body;
+        const {id}= req.user;
         const assignment = await AssignmentModel
             .findById(assignmentId)
             .populate('questions');
 
-        if(!assignmentId && !studentId && !answers){
+        if(!classroomId||!assignmentId || !studentId || !answers){
             return res.status(400).json({message: "All fields are required",success:false});
         }
+
+        const classroom = await ClassroomModel.findById(classroomId);
+        if(!classroom){
+            return res.status(404).json({message: "Classroom not found",success:false});
+        }
+
+        if(!classroom.students.includes(id)){
+            return res.status(403).json({message: "You are not allowed to submit assignment",success:false});
+        }        
 
         if(!assignment){
             return res.status(404).json({message: "Assignment not found",success:false});
