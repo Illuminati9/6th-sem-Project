@@ -26,7 +26,7 @@ const submissionSchema = new mongoose.Schema({
     status:{
         type: String,
         enum: [Pending, Submitted, Late],
-        default: "pending",
+        default: Late,
     },
     submittedAt: {
         type: Date,
