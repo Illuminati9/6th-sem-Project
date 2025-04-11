@@ -1,13 +1,15 @@
 import "./App.css";
-// import Drawer from "./components/Drawer/drawer"
-// import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./components/Login/Login";
 import SignUp from "./components/Signup/signup";
 import Home from "./components/Home/home";
 import Landing from "./components/Landing/landing";
+import Main from './components/Main/Main'
+import AssignmentDetail from "./components/Main/Components/Assignment";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 
-// const theme = createTheme();
+
+const theme = createTheme();
 
 function App() {
 
@@ -23,13 +25,14 @@ function App() {
   };
 
   const PublicRoute = ({ children }) => {
-    if (isAuthenticated()) {
+    if (!isAuthenticated()) {
       return <Navigate to="/" />;
     }
     return children;
   };
 
   return (
+    <ThemeProvider theme={theme}>
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
@@ -42,6 +45,20 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route 
+          path="/classroom/:id"
+          element={
+            <ProtectedRoute>
+              <Main />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/assignment/:assignmentId" element={
+           <ProtectedRoute>
+            <AssignmentDetail />
+           </ProtectedRoute>
+          } />
         <Route path="/landing" element={<Landing />} />
         {/* <Route 
           path="/" 
@@ -60,6 +77,7 @@ function App() {
         /> */}
       </Routes>
     </Router>
+    </ThemeProvider>
   );
 }
 

@@ -106,6 +106,8 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
     try {
+        // console.log("-----------------------Body----------------------")
+        // console.log(req.body)
         const { email, password } = req.body;
 
         if (!email || !password) {
@@ -127,6 +129,8 @@ export const login = async (req, res) => {
         res.status(200).json({
             message: 'User logged in successfully',
             token,
+            id: user._id,
+            name: user.name,
             success: true
         });
 

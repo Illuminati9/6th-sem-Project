@@ -23,12 +23,13 @@ const checkValidClassroomCode = async () => {
 
 export const createClassroom = async (req, res) => {
     try {
-        const { name, subject, description } = req.body;
+        const { name, subject, section, description } = req.body;
         const {id} = req.user;
         if(
            !name 
         || !subject 
-        || !description ) {
+        || !description
+        || !section ) {
             return res.status(400).json({ message: "All fields are required." });
         }
 
@@ -39,7 +40,7 @@ export const createClassroom = async (req, res) => {
 
         const classroomCode = await checkValidClassroomCode();
         console.log(classroomCode);
-        const newClassroom = new ClassroomModel({ name, description, classroomCode, subject, instructor: instructor.id  });
+        const newClassroom = new ClassroomModel({ name, description, section, classroomCode, subject, instructor: instructor.id  });
         await newClassroom.save();
 
         instructor.classrooms.push(newClassroom.id);
@@ -116,7 +117,7 @@ export const getClassroom = async (req, res) => {
         if(!classroom) {
             return res.status(404).json({ message: "Classroom not found.",success: false });
         }
-       
+
         if(classroom.instructor.id!=id && !classroom.students.some(student => student.id.toString() === id.toString())){
             return res.status(400).json({
                 message: "You are not a part of this classroom.",
@@ -142,9 +143,6 @@ export const getAllClassrooms =async (req,res)=>{
         const { id } = req.user;
         const user = await UserModel.findById(id).populate('classrooms');   
         
-        // we have to hide the details of students in the classroom and only send the name of the instructor
-        // console.log(user.classrooms);
-
         if(!user){
             return res.status(404).json({
                 message: "User not found.",
@@ -153,7 +151,7 @@ export const getAllClassrooms =async (req,res)=>{
         }
         
         if(!user.classrooms.length){
-            return res.status(404).json({
+            return res.status(200).json({
                 message: "No classrooms found.",
                 success: false
             });
@@ -174,7 +172,7 @@ export const getAllClassrooms =async (req,res)=>{
             const instructor = await UserModel.findById(classrooms[i].instructor,{password:0});
             classrooms[i].instructor = instructor.name;
         }
-        
+
         res.status(200).json({
             success: true,
             classrooms: classrooms
@@ -202,12 +200,12 @@ export const getUserDataByClassroomCode = async (req,res)=>{
             });
         }
 
-        if(classroom.instructor.id!=id && !classroom.students.some(student => student.id.toString() === id.toString())){
-            return res.status(400).json({
-                message: "You are forbidden to view the details of the classroom.",
-                success: false
-            });
-        }
+        // if(classroom.instructor.id!=id && !classroom.students.some(student => student.id.toString() === id.toString())){
+        //     return res.status(400).json({
+        //         message: "You are forbidden to view the details of the classroom.",
+        //         success: false
+        //     });
+        // }
 
 
         const allDetails =[];

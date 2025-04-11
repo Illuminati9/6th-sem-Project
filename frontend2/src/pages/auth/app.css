@@ -1,0 +1,13 @@
+.submit-btn{
+    background-color: rgb(0, 195, 255);
+    color: white;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.inputs{
+    /* If autofilled the background colour is changing I want to remove it */
+    background-color: transparent !important;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}

@@ -5,14 +5,23 @@ import Assignment from '../models/Assignment.js';
 
 export const createAssignment = async (req, res) => {
     try {
-        const { title, description, dueDate, totalMarks, questions } = req.body;
+        const { title, description, dueDate, dueTime, totalMarks, questions } = req.body;
         const {id} = req.user;
         const {classroomCode} = req.params;
 
         if(!title || !description ){
-            console.log(questions);
             console.log(title,description)
             return res.status(400).json({message: "Please fill in all fields",success: false});
+        }
+        if(!questions || questions.length === 0){
+            return res.status(400).json({message: "Please add at least one question",success: false});
+        }
+        
+        console.log(questions);
+        for(let i=0;i<questions.length;i++){
+            if(!questions[i].content){
+                return res.status(400).json({message: "Please fill in all fields",success: false});
+            }
         }
 
         const classroom = await ClassroomModel.findOne({classroomCode});
@@ -31,10 +40,13 @@ export const createAssignment = async (req, res) => {
             });
         }
 
+        // const dueDateTime = new Date(`${dueDate}T${dueTime}`);
+
         const newAssignment = new AssignmentModel({
             title,
             description,
             dueDate,
+            dueTime,
             totalMarks,
             classroomId: classroom._id,
             createdBy: id,
@@ -119,6 +131,49 @@ export const getAllAssignments = async (req, res) =>{
         }
 
         const classroom = await ClassroomModel.findOne({classroomCode});
+        if(!classroom){
+            return res.status(404).json({
+                message: "Classroom not found",
+                success: false,
+            });
+        }
+
+        const assignments = await AssignmentModel.find({classroomId: classroom._id});
+        if(!assignments){
+            return res.status(404).json({
+                message: "No assignments found",
+                success: false,
+            });
+        }
+
+        console.log(assignments)
+
+
+        return res.status(200).json({
+            message: "Assignments fetched successfully",
+            success: true,
+            data: assignments,
+        })
+
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message,
+            success: false,
+        });
+    }
+};
+
+export const getAllAssignmentsById = async (req, res) =>{
+    try {
+        const {classroomId} = req.params;
+        if(!classroomId){
+            return res.status(400).json({
+                message: "Please provide classroom code",
+                success: false,
+            });
+        }
+
+        const classroom = await ClassroomModel.findById(classroomId);
         if(!classroom){
             return res.status(404).json({
                 message: "Classroom not found",

@@ -8,16 +8,16 @@ const assignmentSchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        // required: true,
         trim: true,
     },
     dueDate: {
         type: Date,
-        // required: true,
+    },
+    dueTime:{
+        type: String,
     },
     totalMarks: {
         type: Number,
-        // required: true,
     },
     classroomId: {
         type: mongoose.Schema.Types.ObjectId,
