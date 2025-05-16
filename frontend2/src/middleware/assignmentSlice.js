@@ -48,6 +48,29 @@ export const fetchAssignmentDetailById = createAsyncThunk(
   }
 );
 
+export const createAssignment = createAsyncThunk(
+  'assignments/createAssignment',
+  async ({ classroomCode, assignmentData }, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return rejectWithValue("No token available");
+
+      const response = await axios.post(`http://localhost:8000/api/assignment/create/${classroomCode}`, assignmentData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.status !== 200) {
+        return rejectWithValue(response.data.message);
+      }
+      console.log("Assignment created successfully:", response.data.data);
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
 const assignmentSlice = createSlice({
   name: 'assignments',
   initialState: {

@@ -4,7 +4,8 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAssignmentsForClassroom } from "../../middleware/assignmentSlice";
+import { createAssignment, fetchAssignmentsForClassroom } from "../../middleware/assignmentSlice";
+import { fetchClassroomDetails } from "../../middleware/classroomDetailSlice";
 
 const Classwork = ({ id }) => {
   const dispatch = useDispatch();
@@ -23,7 +24,7 @@ const Classwork = ({ id }) => {
 
   useEffect(() => {
     dispatch(fetchAssignmentsForClassroom(id));
-  }, [dispatch, id]);
+  }, [dispatch]);
 
   const handleAddQuestion = () => {
     setQuestions([...questions, { content: "" }]);
@@ -64,8 +65,9 @@ const Classwork = ({ id }) => {
       alert("Please add at least one question.");
       return;
     }
-
-    dispatch(fetchAssignmentsForClassroom(id));
+    await dispatch(createAssignment({ classroomCode: id, assignmentData: { title: assignmentTitle, dueDate: dueDateTime, description: assignmentDescription, questions } }));
+    await dispatch(fetchAssignmentsForClassroom(id));
+    await dispatch(fetchClassroomDetails(id));
 
     setOpenCreate(false);
     setAssignmentTitle("");
