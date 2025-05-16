@@ -8,7 +8,12 @@ import axios from "axios";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
 
-const AssignmentSubmission = ({ assignmentId, dueDate, assignment, classroomId }) => {
+const AssignmentSubmission = ({
+  assignmentId,
+  dueDate,
+  assignment,
+  classroomId,
+}) => {
   const [submission, setSubmission] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -25,7 +30,11 @@ const AssignmentSubmission = ({ assignmentId, dueDate, assignment, classroomId }
       try {
         const res = await axios.get(
           `http://localhost:8000/api/submission/getSubmissions/${assignmentId}`,
-          { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
         );
         console.log(res.data);
         if (res.data.success) {
@@ -34,7 +43,9 @@ const AssignmentSubmission = ({ assignmentId, dueDate, assignment, classroomId }
           setError(res.data.message);
         }
       } catch (err) {
-        setError(err.response?.data?.message || "Error fetching submission status");
+        setError(
+          err.response?.data?.message || "Error fetching submission status"
+        );
       } finally {
         setLoading(false);
       }
@@ -69,7 +80,7 @@ const AssignmentSubmission = ({ assignmentId, dueDate, assignment, classroomId }
       questionId: qId,
       content: studentAnswers[qId],
       images: [],
-      marksObtained: 0
+      marksObtained: 0,
     }));
 
     try {
@@ -77,12 +88,14 @@ const AssignmentSubmission = ({ assignmentId, dueDate, assignment, classroomId }
         classroomCode: classroomId,
         assignmentId,
         studentId: user.id,
-        answers: formattedAnswers
+        answers: formattedAnswers,
       };
       const res = await axios.post(
         `http://localhost:8000/api/submission/createSubmission`,
         payload,
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
       );
       if (res.data.success) {
         alert("Assignment submitted successfully.");
@@ -104,11 +117,16 @@ const AssignmentSubmission = ({ assignmentId, dueDate, assignment, classroomId }
   if (submission) {
     return (
       <Box>
-        <Typography variant="h6" sx={{ mb: 2 }}>Submission Details</Typography>
-        <Typography variant="body1">
-          Submitted on: {dayjs(submission.submissionTime).format("DD MMM YYYY, HH:mm")}
+        <Typography variant="h6" sx={{ mb: 2 }}>
+          Submission Details
         </Typography>
-        <Typography variant="body1" sx={{ mt: 1 }}>Your Answers:</Typography>
+        <Typography variant="body1">
+          Submitted on:{" "}
+          {dayjs(submission.submissionTime).format("DD MMM YYYY, HH:mm")}
+        </Typography>
+        <Typography variant="body1" sx={{ mt: 1 }}>
+          Your Answers:
+        </Typography>
         {submission.answers &&
           submission.answers.map((ans, idx) => (
             <Box key={idx} sx={{ border: "1px solid #ccc", p: 1, my: 1 }}>
@@ -121,52 +139,60 @@ const AssignmentSubmission = ({ assignmentId, dueDate, assignment, classroomId }
   } else if (deadlinePassed) {
     return (
       <Typography variant="h6" color="error">
-        The submission deadline has passed. You no longer have access to submit the assignment.
+        The submission deadline has passed. You no longer have access to submit
+        the assignment.
       </Typography>
     );
   } else {
-   
     return (
       <Box>
         <Typography variant="h6" sx={{ my: 2 }}>
           Submit Your Assignment
         </Typography>
-        {assignment && assignment.questions && assignment.questions.map((q, index) => (
-          <Box key={q._id} sx={{ mb: 2 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
-              {`Question ${index + 1}:`}
-            </Typography>
-            <Typography variant="subtitle1">{q.content}</Typography>
-            <ToggleButtonGroup
-              color="primary"
-              value={studentAnswerType[q._id]}
-              exclusive
-              onChange={(e, newType) => handleToggleAnswerType(q._id, newType)}
-              size="small"
-              sx={{ my: 1 }}
-            >
-              <ToggleButton value="paragraph">Paragraph</ToggleButton>
-              <ToggleButton value="code">Code</ToggleButton>
-            </ToggleButtonGroup>
-            {studentAnswerType[q._id] === "code" ? (
-              <Editor
-                height="40vh"
-                defaultLanguage="cpp"
-                defaultValue="//Your Code goes here"
-                value={studentAnswers[q._id] || ""}
-                onChange={(value) => handleAnswerChange(q._id, value)}
-              />
-            ) : (
-              <TextField
-                label="Your Paragraph Answer"
-                value={studentAnswers[q._id] || ""}
-                onChange={(e) => handleAnswerChange(q._id, e.target.value)}
-                multiline
-                fullWidth
-              />
-            )}
-          </Box>
-        ))}
+        {assignment &&
+          assignment.questions &&
+          assignment.questions.map((q, index) => (
+            <Box key={q._id} sx={{ mb: 2 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+                {`Question ${index + 1}:`}
+              </Typography>
+              <Typography variant="subtitle1">{q.content}</Typography>
+              <ToggleButtonGroup
+                color="primary"
+                value={studentAnswerType[q._id]}
+                exclusive
+                onChange={(e, newType) =>
+                  handleToggleAnswerType(q._id, newType)
+                }
+                size="small"
+                sx={{ my: 1 }}
+              >
+                <ToggleButton value="paragraph">Paragraph</ToggleButton>
+                <ToggleButton value="code">Code</ToggleButton>
+              </ToggleButtonGroup>
+              {studentAnswerType[q._id] === "code" ? (
+                <Editor
+                  height="40vh"
+                  defaultLanguage="cpp"
+                  defaultValue="//Your Code goes here"
+                  value={studentAnswers[q._id] || ""}
+                  onChange={(value) => handleAnswerChange(q._id, value)}
+                />
+              ) : (
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={3}
+                  variant="outlined"
+                  label="Your Answer"
+                  value={studentAnswers[q._id] || ""}
+                  onChange={(e) => handleAnswerChange(q._id, e.target.value)}
+                  className="form__input"
+                  placeholder="Type your answer here..."
+                />
+              )}
+            </Box>
+          ))}
         <Button variant="contained" color="primary" onClick={handleFormSubmit}>
           Submit Answers
         </Button>
