@@ -5,9 +5,9 @@ import AssignmentModel from '../models/Assignment.js';
 
 export const createComment = async (req, res) => {
     try {
+        // change this to accept the multipart/form-data
         const {content, classroomId, assignmentId, parentCommentId} = req.body;
         const {id} = req.user;
-
         if(!content){
             return res.status(400).json({
                 message: "Please provide content",
@@ -89,11 +89,11 @@ export const getComments = async (req, res) => {
 
         if(!classroomId && !assignmentId && !parentCommentId){
             return res.status(400).json({
-                message: "Please provide classroomId",
+                message: "Please provide atleast single detail",
                 success: false,
             });
         }
-
+       
         if(classroomId){
             const classroom = await ClassroomModel.findById(classroomId);
             if(!classroom){
@@ -127,7 +127,6 @@ export const getComments = async (req, res) => {
         let comments = [];
         if(classroomId){
             comments = await CommentModel.find({classroomId}).populate('createdBy', 'name email');
-            // console.log(comments)
         }
 
         if(assignmentId){
@@ -145,6 +144,7 @@ export const getComments = async (req, res) => {
         });
 
     } catch (error) {
+        console.log("Hello world")
         return res.status(500).json({
             message: error.message,
             success: false,

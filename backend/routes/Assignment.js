@@ -10,6 +10,7 @@ router.post('/create/:classroomCode', authenticateUser, createAssignment);
 //! GET
 router.get('/get/:assignmentId', authenticateUser, getAssignment);
 router.get('/getAll/:classroomCode', authenticateUser, getAllAssignments);
+// router.get('/getAllUsingId/:classroomId', authenticateUser, getAssignment);
 
 //! PUT
 router.put('/update/:assignmentId', authenticateUser, updateAssignment);

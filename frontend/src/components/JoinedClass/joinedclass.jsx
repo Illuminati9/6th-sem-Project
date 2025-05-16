@@ -2,7 +2,7 @@ import React from "react";
 import Avatar  from "@mui/material/Avatar";
 import FolderOpen from "@mui/icons-material/FolderOpen";
 import PermContactCalendar from "@mui/icons-material/PermContactCalendar";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import "./style.css";
 
 const JoinedClasses = ({ classData }) => {
@@ -13,9 +13,14 @@ const JoinedClasses = ({ classData }) => {
           <div className="joined__imgWrapper" />
           <div className="joined__image" />
           <div className="joined__content">
-            <Link className="joined__title" to={`/${classData?._id}`}>
+            {/* <Link className="joined__title" to={`/classroom/${classData?.classroomCode}`} >
               <h2>{classData?.name}</h2>
-            </Link>
+            </Link> */}
+            <div className="joined__title">
+              <a href={`/classroom/${classData?.classroomCode}`}>
+              <h2>{classData?.name}</h2>
+              </a>
+            </div>
             <p className="joined__owner">{classData?.instructor}</p>
           </div>
         </div>

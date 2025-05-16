@@ -7,7 +7,11 @@ router.post('/signup', signup);
 router.post('/login', login);
 router.post('/resetPassword',authenticateUser,resetPassword);
 router.post('/forgotPassword',forgotPassword);
-// router.get('/me',authenticateUser,getUserDetails)
+router.get('/verify',authenticateUser,async(req,res)=>{
+    res.status(200).json({
+        success:true,
+        user:req.user
+    })
+});
 
 export default router;
-// module.exports = router;

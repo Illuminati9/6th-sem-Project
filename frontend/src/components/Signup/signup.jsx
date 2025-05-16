@@ -20,7 +20,6 @@ const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
-    username: "",
     name: "",
     email: "",
     password: "",
@@ -92,15 +91,6 @@ const SignUp = () => {
         )}
 
         <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-          <TextField
-            className="signup__input"
-            label="Username"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            fullWidth
-            required
-          />
 
           <TextField
             className="signup__input"

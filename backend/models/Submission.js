@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Late, Pending, Submitted } from "../utils/enums";
+import { Late, Pending, Submitted } from "../utils/enums.js";
 
 const submissionSchema = new mongoose.Schema({
     assignmentId: {
@@ -26,7 +26,7 @@ const submissionSchema = new mongoose.Schema({
     status:{
         type: String,
         enum: [Pending, Submitted, Late],
-        default: Late,
+        default: Pending,
     },
     submittedAt: {
         type: Date,

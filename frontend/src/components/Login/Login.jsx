@@ -54,6 +54,7 @@ const Login = () => {
 
       if (data.success) {
         localStorage.setItem("token", data.token);
+        localStorage.setItem("id",data.id);
         navigate("/");
       } else {
         setError(data.message || "Invalid credentials. Please try again.");
