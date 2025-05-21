@@ -8,6 +8,9 @@ const useStyles = makeStyles({
   form: {
     padding: "30px",
     textAlign: "center",
+    overflowX: "hidden",
+    maxWidth: "100vw",
+    boxSizing: "border-box",
   },
   title: {
     fontSize: "24px",
@@ -20,13 +23,16 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "column",
     gap: "20px",
+    width: "100%",
+    maxWidth: "600px",
+    margin: "0 auto",
   },
   buttonGroup: {
     marginTop: "30px",
     display: "flex",
     justifyContent: "center",
     gap: "15px",
-  }
+  },
 });
 
 const Form = ({ setForm, setState }) => {
@@ -43,7 +49,7 @@ const Form = ({ setForm, setState }) => {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
     if (error) setError("");
   };
@@ -57,16 +63,24 @@ const Form = ({ setForm, setState }) => {
     try {
       setLoading(true);
       setError("");
-      
-      const response = await axios.post("http://localhost:8000/api/classroom/create", formData, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+
+      const response = await axios.post(
+        "http://localhost:8000/api/classroom/create",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
-      });
+      );
 
       if (response.data.success) {
         setState(false);
-        if (window.confirm('Classroom created successfully! Reload page to see changes?')) {
+        if (
+          window.confirm(
+            "Classroom created successfully! Reload page to see changes?"
+          )
+        ) {
           window.location.reload();
         }
       }
@@ -123,7 +137,7 @@ const Form = ({ setForm, setState }) => {
           value={formData.description}
           onChange={handleChange}
           required
-          helperText="Provide a brief description of the class"
+          helperText="Enter classroom description"
         />
       </div>
       <div className={classes.buttonGroup}>

@@ -1,16 +1,36 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Card, CardContent, Typography, Avatar, Button, Box, Fab, Dialog, DialogTitle, DialogContent, DialogActions, TextField, IconButton, Divider, MenuItem, Select, InputLabel, FormControl } from "@mui/material";
+import {
+  Grid,
+  Card,
+  CardContent,
+  Typography,
+  Avatar,
+  Button,
+  Box,
+  Fab,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  IconButton,
+  Divider,
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { createAssignment, fetchAssignmentsForClassroom } from "../../middleware/assignmentSlice";
+import {
+  createAssignment,
+  fetchAssignmentsForClassroom,
+} from "../../middleware/assignmentSlice";
 import { fetchClassroomDetails } from "../../middleware/classroomDetailSlice";
 
 const Classwork = ({ id }) => {
   const dispatch = useDispatch();
-  const { assignments, loading, error } = useSelector((state) => state.assignment);
-  console.log("Assignment Data:", assignments)
+  const { assignments, loading, error } = useSelector(
+    (state) => state.assignment
+  );
   const userId = localStorage.getItem("id");
   const instructorId = localStorage.getItem("classroomInstructor");
 
@@ -18,20 +38,24 @@ const Classwork = ({ id }) => {
   const [assignmentTitle, setAssignmentTitle] = useState("");
   const [assignmentDueDate, setAssignmentDueDate] = useState("");
   const [assignmentDueTime, setAssignmentDueTime] = useState("");
-  const [dueMeridian, setDueMeridian] = useState("AM");
   const [assignmentDescription, setAssignmentDescription] = useState("");
-  const [questions, setQuestions] = useState([{ content: "" }]);
+  const [questions, setQuestions] = useState([
+    { content: "", image: null, imagePreview: null },
+  ]);
 
   useEffect(() => {
     dispatch(fetchAssignmentsForClassroom(id));
-  }, [dispatch]);
+  }, [dispatch, id]);
 
   const handleAddQuestion = () => {
-    setQuestions([...questions, { content: "" }]);
+    setQuestions([
+      ...questions,
+      { content: "", image: null, imagePreview: null },
+    ]);
   };
 
   const handleRemoveQuestion = (index) => {
-    setQuestions(questions.filter((q, i) => i !== index));
+    setQuestions(questions.filter((_, i) => i !== index));
   };
 
   const handleQuestionChange = (index, value) => {
@@ -40,32 +64,48 @@ const Classwork = ({ id }) => {
     setQuestions(newQuestions);
   };
 
-  const convertTo24Hour = (time, meridian) => {
-    if (!time) return "";
-    const [hourStr, minute] = time.split(":");
-    let hour = parseInt(hourStr, 10);
-    if (meridian === "AM") {
-      if (hour === 12) hour = 0;
-    } else {
-      if (hour !== 12) hour += 12;
+  const handleImageUpload = (index, file) => {
+    const newQuestions = [...questions];
+    newQuestions[index].image = file;
+    newQuestions[index].imagePreview = URL.createObjectURL(file);
+    setQuestions(newQuestions);
+  };
+
+  const handleRemoveImage = (index) => {
+    const newQuestions = [...questions];
+    newQuestions[index].image = null;
+    if (newQuestions[index].imagePreview) {
+      URL.revokeObjectURL(newQuestions[index].imagePreview);
     }
-    const hourFormatted = hour < 10 ? "0" + hour : hour.toString();
-    return `${hourFormatted}:${minute}`;
+    newQuestions[index].imagePreview = null;
+    setQuestions(newQuestions);
   };
 
   const handleCreateAssignment = async () => {
-    const convertedTime = convertTo24Hour(assignmentDueTime, dueMeridian);
-    const dueDateTime = `${assignmentDueDate}T${convertedTime}`;
+    const dueDateTime = `${assignmentDueDate}T${assignmentDueTime}`;
 
     if (isNaN(new Date(dueDateTime).getTime())) {
       alert("Invalid due date/time provided. Please check your inputs.");
       return;
     }
-    if (questions[0].content === "") {
-      alert("Please add at least one question.");
+    if (questions[0].content.trim() === "") {
+      alert("Please add at least one Question content.");
       return;
     }
-    await dispatch(createAssignment({ classroomCode: id, assignmentData: { title: assignmentTitle, dueDate: dueDateTime, description: assignmentDescription, questions } }));
+    await dispatch(
+      createAssignment({
+        classroomCode: id,
+        assignmentData: {
+          title: assignmentTitle,
+          dueDate: dueDateTime,
+          description: assignmentDescription,
+          questions: questions.map(({ content, image }) => ({
+            content,
+            image,
+          })),
+        },
+      })
+    );
     await dispatch(fetchAssignmentsForClassroom(id));
     await dispatch(fetchClassroomDetails(id));
 
@@ -73,9 +113,11 @@ const Classwork = ({ id }) => {
     setAssignmentTitle("");
     setAssignmentDueDate("");
     setAssignmentDueTime("");
-    setDueMeridian("AM");
     setAssignmentDescription("");
-    setQuestions([{ content: "" }]);
+    questions.forEach((q) => {
+      if (q.imagePreview) URL.revokeObjectURL(q.imagePreview);
+    });
+    setQuestions([{ content: "", image: null, imagePreview: null }]);
   };
 
   if (loading) return <Typography>Loading assignments...</Typography>;
@@ -87,18 +129,16 @@ const Classwork = ({ id }) => {
         Classwork Assignments
       </Typography>
       {userId === instructorId && (
-        <div>
-          <Fab
-            variant="extended"
-            color="primary"
-            aria-label="add"
-            onClick={() => setOpenCreate(true)}
-            sx={{ mb: 2 }}
-          >
-            <AddIcon />
-            Create
-          </Fab>
-        </div>
+        <Fab
+          variant="extended"
+          color="primary"
+          aria-label="add"
+          onClick={() => setOpenCreate(true)}
+          sx={{ mb: 2 }}
+        >
+          <AddIcon />
+          Create
+        </Fab>
       )}
       <Divider sx={{ my: 4 }} />
       {assignments && assignments.length !== 0 ? (
@@ -150,7 +190,12 @@ const Classwork = ({ id }) => {
         </Box>
       )}
 
-      <Dialog open={openCreate} onClose={() => setOpenCreate(false)} fullWidth maxWidth="sm">
+      <Dialog
+        open={openCreate}
+        onClose={() => setOpenCreate(false)}
+        fullWidth
+        maxWidth="sm"
+      >
         <DialogTitle>Create New Assignment</DialogTitle>
         <DialogContent>
           <TextField
@@ -161,6 +206,7 @@ const Classwork = ({ id }) => {
             fullWidth
             value={assignmentTitle}
             onChange={(e) => setAssignmentTitle(e.target.value)}
+            sx={{ mb: 2 }}
           />
           <TextField
             margin="dense"
@@ -170,67 +216,105 @@ const Classwork = ({ id }) => {
             value={assignmentDueDate}
             onChange={(e) => setAssignmentDueDate(e.target.value)}
             InputLabelProps={{ shrink: true }}
+            sx={{ mb: 2 }}
           />
-          <Box sx={{ display: "flex", gap: 2, mt: 1 }}>
-            <TextField
-              margin="dense"
-              label="Due Time (hh:mm)"
-              type="text"
-              fullWidth
-              value={assignmentDueTime}
-              onChange={(e) => setAssignmentDueTime(e.target.value)}
-              placeholder="09:30"
-            />
-            <FormControl sx={{ minWidth: 80 }}>
-              <InputLabel id="meridian-label" shrink>
-                AM/PM
-              </InputLabel>
-              <Select
-                labelId="meridian-label"
-                value={dueMeridian}
-                onChange={(e) => setDueMeridian(e.target.value)}
-                label="AM/PM"
-              >
-                <MenuItem value="AM">AM</MenuItem>
-                <MenuItem value="PM">PM</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
+          <TextField
+            margin="dense"
+            label="Due Time"
+            type="time"
+            fullWidth
+            value={assignmentDueTime}
+            onChange={(e) => setAssignmentDueTime(e.target.value)}
+            InputLabelProps={{ shrink: true }}
+            sx={{ mb: 2 }}
+          />
           <TextField
             margin="dense"
             label="Description"
             type="text"
             fullWidth
             multiline
-            rows={3}
+            rows={10}
             value={assignmentDescription}
             onChange={(e) => setAssignmentDescription(e.target.value)}
+            sx={{ mb: 3 }}
           />
-          <Typography variant="subtitle1" mt={2}>
+          <Typography variant="subtitle1" mb={2}>
             Questions
           </Typography>
           {questions.map((ques, index) => (
-            <Box key={index} display="flex" alignItems="center" mt={1}>
+            <Box key={index} width="100%" mb={3}>
               <TextField
-                margin="dense"
                 label={`Question ${index + 1}`}
                 type="text"
                 fullWidth
+                multiline
+                rows={8}
                 value={ques.content}
                 onChange={(e) => handleQuestionChange(index, e.target.value)}
+                margin="dense"
               />
-              <IconButton onClick={() => handleRemoveQuestion(index)}>
+              <Button
+                variant="outlined"
+                component="label"
+                size="small"
+                sx={{ mt: 1 }}
+              >
+                {ques.image ? "Change Image" : "Upload Image"}
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={(e) => handleImageUpload(index, e.target.files[0])}
+                />
+              </Button>
+              {ques.imagePreview && (
+                <Box
+                  mt={1}
+                  display="flex"
+                  alignItems="center"
+                  gap={1}
+                  sx={{ position: "relative" }}
+                >
+                  <img
+                    src={ques.imagePreview}
+                    alt={`Question ${index + 1}`}
+                    style={{
+                      maxWidth: "100px",
+                      maxHeight: "100px",
+                      borderRadius: 4,
+                      border: "1px solid #ccc",
+                    }}
+                  />
+                  <IconButton
+                    size="small"
+                    onClick={() => handleRemoveImage(index)}
+                    sx={{ color: "red" }}
+                  >
+                    <RemoveCircleIcon />
+                  </IconButton>
+                </Box>
+              )}
+              <IconButton
+                onClick={() => handleRemoveQuestion(index)}
+                sx={{ mt: 1 }}
+                aria-label="remove question"
+              >
                 <RemoveCircleIcon color="error" />
               </IconButton>
             </Box>
           ))}
-          <Button onClick={handleAddQuestion} variant="outlined" sx={{ mt: 1 }}>
+          <Button onClick={handleAddQuestion} variant="outlined" sx={{ mb: 2 }}>
             Add Question
           </Button>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenCreate(false)}>Cancel</Button>
-          <Button onClick={handleCreateAssignment} variant="contained" color="primary">
+          <Button
+            onClick={handleCreateAssignment}
+            variant="contained"
+            color="primary"
+          >
             Create Assignment
           </Button>
         </DialogActions>
